@@ -1,0 +1,424 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Nunito', sans-serif;
+    font-weight: 400;
+    font-size: 100%;
+    background: #F1F1F1;
+    overflow-x: hidden;
+}
+
+*, html {
+    --primaryGradient: linear-gradient(135deg, #52E5E7 10%, #0396FF 100%);
+    --secondaryGradient: linear-gradient(268.91deg, #52E5E7 -2.14%, #0396FF 99.69%);
+    --primaryBoxShadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+    --secondaryBoxShadow: 0px -10px 15px rgba(0, 0, 0, 0.1);
+    --primary: #0396FF;
+}
+
+/* CHATBOX
+=============== */
+.chatbox {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+    overflow-x: hidden;
+}
+
+/* CONTENT IS CLOSE */
+.chatbox__support {
+    display: flex;
+    flex-direction: column;
+    background: #eee;
+    width: 100%;
+    min-height: 80vh;
+    height: auto;
+    z-index: -123456;
+    opacity: 0;
+    transition: all .5s ease-in-out;
+}
+
+/* CONTENT ISOPEN */
+.chatbox--active {
+    transform: translateY(10px);
+    z-index: 123456;
+    opacity: 1;
+}
+
+/* BUTTON */
+.chatbox__button {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.send__button {
+    padding: 6px;
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+}
+
+
+/* HEADER */
+.chatbox__header {
+    background: var(--primaryGradient);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 15px 20px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    box-shadow: var(--primaryBoxShadow);
+}
+
+.chatbox__image--header {
+    margin-right: 10px;
+}
+
+.chatbox__heading--header {
+    font-size: 1.2rem;
+    color: white;
+    margin: 0;
+    word-break: break-word;
+}
+
+.chatbox__description--header {
+    font-size: .9rem;
+    color: white;
+    margin: 0;
+    word-break: break-word;
+}
+
+/* Messages */
+.chatbox__messages {
+    padding: 0 20px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.messages__item {
+    margin-top: 10px;
+    background: #E0E0E0;
+    padding: 8px 12px;
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+.messages__item--visitor,
+.messages__item--typing {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-right-radius: 20px;
+    margin-left: auto;
+}
+
+.messages__item--operator {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    background: var(--primary);
+    color: white;
+    margin-right: auto;
+}
+
+/* FOOTER */
+.chatbox__footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background: var(--secondaryGradient);
+    box-shadow: var(--secondaryBoxShadow);
+    border-bottom-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+}
+
+.chatbox__footer input {
+    flex: 1;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 30px;
+    text-align: left;
+    font-size: 1rem;
+    margin-right: 10px;
+}
+
+.chatbox__send--footer {
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    padding: 10px;
+}
+
+.chatbox__button button,
+.chatbox__button button:focus,
+.chatbox__button button:visited {
+    padding: 10px;
+    background: white;
+    border: none;
+    outline: none;
+    border-radius: 50px;
+    box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .chatbox__support {
+        min-height: 85vh;
+    }
+
+    .chatbox__header {
+        padding: 10px 15px;
+    }
+
+    .chatbox__messages {
+        padding: 10px 15px;
+    }
+
+    .chatbox__heading--header {
+        font-size: 1rem;
+    }
+
+    .chatbox__description--header {
+        font-size: .8rem;
+    }
+
+    .messages__item {
+        max-width: 85%;
+        font-size: 0.9rem;
+        margin: 5px 0;
+        border-radius: 18px;
+    }
+
+    .messages__item--visitor,
+    .messages__item--typing {
+        border-top-left-radius: 18px;
+        border-top-right-radius: 18px;
+        border-bottom-right-radius: 18px;
+    }
+
+    .messages__item--operator {
+        border-top-left-radius: 18px;
+        border-top-right-radius: 18px;
+        border-bottom-left-radius: 18px;
+    }
+
+    .chatbox__footer {
+        padding: 10px 15px;
+    }
+
+    .chatbox__footer input {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+
+    .chatbox__send--footer {
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .chatbox__header {
+        padding: 8px 12px;
+    }
+
+    .chatbox__messages {
+        padding: 8px 12px;
+    }
+
+    .chatbox__heading--header {
+        font-size: 0.875rem;
+    }
+
+    .chatbox__description--header {
+        font-size: 0.7rem;
+    }
+
+    .messages__item {
+        font-size: 0.8rem;
+        border-radius: 15px;
+    }
+
+    .messages__item--visitor,
+    .messages__item--typing {
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        border-bottom-right-radius: 15px;
+    }
+
+    .messages__item--operator {
+        border-top-left-radius: 15px;
+        border-top-right-radius: 15px;
+        border-bottom-left-radius: 15px;
+    }
+
+    .chatbox__footer {
+        padding: 8px 12px;
+    }
+
+    .chatbox__footer input {
+        padding: 6px 10px;
+        font-size: 0.85rem;
+    }
+
+    .chatbox__send--footer {
+        padding: 6px;
+        font-size: 0.9rem;
+    }
+
+    .chatbox__button button {
+        padding: 8px;
+    }
+}
+
+.respondcard {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.3s;
+    width: 40%;
+    margin-bottom: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.respondcard:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+
+.respondcontainer {
+    padding: 2px 16px;
+}
+
+.myDIV {
+    width: 100%;
+    text-align: left;
+    margin: 0;
+    padding: 8px 12px;
+    font-size: inherit;
+    background: inherit;
+    border-radius: 20px;
+    box-shadow: none;
+    transition: 0.3s;
+}
+
+.hide {
+    display: none;
+    padding: 8px 12px;
+    background: #f8f9fa;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: 0.3s;
+    width: 100%;
+    margin: 0;
+}
+      
+.myDIV:hover + .hide {
+    display: block;
+}
+
+/* Accordion styles for chat messages */
+.messages__item--operator .accordion {
+    width: 100%;
+    margin: 0;
+}
+
+.messages__item--operator .accordion-item {
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: none;
+    background: transparent;
+    margin-bottom: 5px;
+}
+
+.messages__item--operator .accordion-button {
+    background: var(--primary);
+    color: white;
+    border-radius: 20px 20px 0 0 !important;
+    text-align: left;
+    justify-content: flex-start;
+    padding: 12px;
+    font-weight: bold;
+    box-shadow: var(--primaryBoxShadow);
+}
+
+.messages__item--operator .accordion-button:not(.collapsed) {
+    background: var(--primary);
+    border-radius: 20px 20px 0 0 !important;
+    color: white;
+    box-shadow: var(--primaryBoxShadow);
+}
+
+.messages__item--operator .accordion-button:focus {
+    box-shadow: 0 0 0 0.25rem rgba(3, 150, 255, 0.25);
+}
+
+.messages__item--operator .accordion-body {
+    background: #f8f9fa;
+    border-radius: 0 0 20px 20px;
+    padding: 12px;
+    word-wrap: break-word;
+    color: #333;
+    border-top: none;
+}
+
+/* Con styles for headers in messages */
+.messages__item--operator .con {
+    text-align: left;
+    margin: 10px 0;
+    padding: 8px 12px;
+    font-size: 1rem;
+    color: #333;
+    background: inherit;
+}
+
+.messages__item--operator .con h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--primary);
+    font-weight: 600;
+}
+
+/* Enhanced responsive for small screens */
+@media (max-width: 480px) {
+    .messages__item {
+        max-width: 90%;
+        font-size: 0.8rem;
+        border-radius: 15px;
+    }
+
+    .messages__item .accordion-item,
+    .messages__item .myDIV,
+    .messages__item .hide {
+        width: 100%;
+        padding: 6px 10px;
+    }
+
+    .messages__item .accordion-button {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+
+    .messages__item .accordion-body {
+        padding: 10px;
+        font-size: 0.85rem;
+    }
+
+    .messages__item .con {
+        padding: 6px 10px;
+        font-size: 0.9rem;
+    }
+
+    .messages__item .con h3 {
+        font-size: 1rem;
+    }
+}
