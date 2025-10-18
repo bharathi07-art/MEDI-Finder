@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="p-5 mb-4 bg-primary rounded-3" style="max-width: 1000px;">
+        <div class="container-fluid py-5">
+            <h1 class="display-5 fw-bold">Find Medicines Near You</h1>
+            <p class="col-md-8 fs-4">
+                Locate pharmacies, compare prices, and get real-time availability of medicines.
+            </p>
+            <button class="btn btn-light btn-lg" type="button">
+                <i class="fas fa-search me-2"></i>Search Medicines
+            </button>
+            <button class="btn btn-outline-light btn-lg" type="button">
+                <i class="fas fa-info-circle me-2"></i>Learn More
+            </button>
+        </div>
+    </div>
+
+<section id="features" class="py-5">
+    <div class="row text-center">
+        <div class="col-md-4 mb-4">
+            <div class="feature-card p-4 rounded shadow-sm">
+                <i class="fas fa-map-marker-alt fa-3x text-primary mb-3"></i>
+                <h3>Location-Based Search</h3>
+                <p>Find medicines and pharmacies near your current location with real-time navigation.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="feature-card p-4 rounded shadow-sm">
+                <i class="fas fa-dollar-sign fa-3x text-success mb-3"></i>
+                <h3>Price Comparison</h3>
+                <p>Compare medicine prices across different pharmacies to find the best deals.</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="feature-card p-4 rounded shadow-sm">
+                <i class="fas fa-check-circle fa-3x text-info mb-3"></i>
+                <h3>Real-Time Availability</h3>
+                <p>Check stock availability in real-time before visiting the pharmacy.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="bg-light py-5 rounded">
+    <div class="row">
+        <div class="col-md-8 mx-auto text-center">
+            <h2 class="mb-4">How It Works</h2>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="step-card p-3">
+                        <div class="step-number">1</div>
+                        <h4>Search Medicine</h4>
+                        <p>Enter the medicine name you're looking for</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="step-card p-3">
+                        <div class="step-number">2</div>
+                        <h4>Set Location</h4>
+                        <p>Allow location access or enter your address</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="step-card p-3">
+                        <div class="step-number">3</div>
+                        <h4>Get Results</h4>
+                        <p>View pharmacies, prices, and availability</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Request user location on homepage
+if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            console.log('Location access granted');
+            localStorage.setItem('userLat', position.coords.latitude);
+            localStorage.setItem('userLng', position.coords.longitude);
+        },
+        (error) => {
+            console.log('Location access denied or unavailable');
+        }
+    );
+}
+</script>
+{% endblock %}

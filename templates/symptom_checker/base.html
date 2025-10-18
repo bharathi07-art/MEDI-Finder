@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Symptom Checker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='symptom_checker/style.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container-fluid d-flex justify-content-center align-items-center min-vh-100">
+        <div class="row w-100 justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="chatbox">
+                    <div class="chatbox__button">
+                        <button><img src="{{ url_for('static', filename='symptom_checker/images/message.jpg') }}" alt="Chat" style="width: 60px; height:50px;"/></button>
+                    </div>
+                    <div class="chatbox__support">
+                        <div class="chatbox__header">
+                            <div class="chatbox__image--header">
+                                <img src="{{ url_for('static', filename='symptom_checker/images/bot.jpg') }}" alt="Bot" style="width: 45px; border-radius: 50px;">
+                            </div>
+                            <div class="chatbox__content--header">
+                                <h4 class="chatbox__heading--header">Symptom Checker</h4>
+                                <p class="chatbox__description--header">Hi, Enter symptoms and get a list of potential conditions</p>
+                            </div>
+                        </div>
+                        <div class="chatbox__messages">
+                            <div>
+                                <div class="messages__item messages__item--visitor">Hi, this is a medical chat support.</div>
+                                <div class="messages__item messages__item--visitor">May I know your name.</div>
+                            </div>
+                        </div>
+                        <div class="chatbox__footer">
+                            <input type="text" placeholder="Write a message...">
+                            <button class="chatbox__send--footer send__button">Send</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        $SCRIPT_ROOT = {{ request.script_root|tojson }};
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='symptom_checker/app.js') }}"></script>
+</body>
+</html>

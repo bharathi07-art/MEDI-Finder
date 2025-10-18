@@ -1,0 +1,395 @@
+{% extends "base.html" %}
+
+{% block title %}Search Medicines - Medi-Finder{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-search me-2"></i>Search Medicines</h5>
+            </div>
+            <div class="card-body">
+                <form id="searchForm">
+                    <div class="mb-3">
+                        <label for="medicineName" class="form-label">Medicine Name</label>
+                        <input type="text" class="form-control" id="medicineName" 
+                               placeholder="Enter medicine name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="locationOption" 
+                                   id="currentLocation" value="current" checked>
+                            <label class="form-check-label" for="currentLocation">
+                                Use Current Location
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="locationOption" 
+                                   id="manualLocation" value="manual">
+                            <label class="form-check-label" for="manualLocation">
+                                Enter Address
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="manualAddressSection" class="mb-3" style="display: none;">
+                        <input type="text" class="form-control" id="manualAddress" 
+                               placeholder="Enter your address">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="searchRadius" class="form-label">Search Radius</label>
+                        <select class="form-select" id="searchRadius">
+                            <option value="5">5 km</option>
+                            <option value="10" selected>10 km</option>
+                            <option value="20">20 km</option>
+                            <option value="50">50 km</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-search me-2"></i>Search
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Search Tips</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2"><small>• Use generic names for better results</small></li>
+                    <li class="mb-2"><small>• Check spelling if no results found</small></li>
+                    <li><small>• Contact pharmacy for latest stock updates</small></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0"><i class="fas fa-map-marker-alt me-2"></i>Nearby Pharmacies</h5>
+                <span id="resultsCount" class="badge bg-light text-dark">0 results</span>
+            </div>
+            <div class="card-body">
+                <div id="map" style="height: 400px; width: 100%;" class="mb-4 rounded"></div>
+                
+                <div id="loading" class="text-center py-4" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Searching for medicines...</p>
+                </div>
+
+                <div id="results" class="row">
+                    <div class="col-12 text-center text-muted py-5">
+                        <i class="fas fa-search fa-3x mb-3"></i>
+                        <p>Enter a medicine name and location to start your search</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://maps.googleapis.com/maps/api/js?key={{ config.GOOGLE_MAPS_API_KEY }}&callback=initMap&v=weekly" async defer></script>
+<script>
+let map;
+let userMarker;
+let pharmacyMarkers = [];
+
+function initMap() {
+    // Default to Bangalore coordinates if no location available
+    const defaultLocation = { lat: 12.9716, lng: 77.5946 };
+    
+    map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 12,
+        center: defaultLocation,
+        mapTypeControl: true,
+        streetViewControl: false
+    });
+
+    // Clear stored coordinates on each load to force fresh location request
+    localStorage.removeItem('userLat');
+    localStorage.removeItem('userLng');
+
+    // Try to get user's location
+    if (navigator.geolocation) {
+        // Always request location permission on page load
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userLocation = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude
+                };
+                
+                map.setCenter(userLocation);
+                
+                // Add or update user marker
+                if (userMarker) {
+                    userMarker.setPosition(userLocation);
+                } else {
+                    userMarker = new google.maps.Marker({
+                        position: userLocation,
+                        map: map,
+                        title: 'Your Location',
+                        icon: {
+                            url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+                        }
+                    });
+                }
+
+                // Store user coordinates in localStorage
+                localStorage.setItem('userLat', userLocation.lat);
+                localStorage.setItem('userLng', userLocation.lng);
+            },
+            (error) => {
+                console.log('Geolocation error:', error);
+                alert('Unable to retrieve your location. Please enter your address manually.');
+                // Switch to manual address input
+                document.getElementById('manualLocation').checked = true;
+                document.getElementById('manualAddressSection').style.display = 'block';
+            }
+        );
+    } else {
+        alert('Geolocation is not supported by your browser. Please enter your address manually.');
+        document.getElementById('manualLocation').checked = true;
+        document.getElementById('manualAddressSection').style.display = 'block';
+    }
+}
+
+// Location option toggle
+document.querySelectorAll('input[name="locationOption"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        const manualSection = document.getElementById('manualAddressSection');
+        manualSection.style.display = this.value === 'manual' ? 'block' : 'none';
+    });
+});
+
+// Search form submission
+document.getElementById('searchForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const medicineName = document.getElementById('medicineName').value.trim();
+    if (!medicineName) return;
+    
+    const locationOption = document.querySelector('input[name="locationOption"]:checked').value;
+    const searchRadius = document.getElementById('searchRadius').value;
+    
+    let lat, lng;
+    
+    if (locationOption === 'current') {
+        // Use stored coordinates or get new ones
+        const storedLat = localStorage.getItem('userLat');
+        const storedLng = localStorage.getItem('userLng');
+        
+        if (storedLat && storedLng) {
+            lat = storedLat;
+            lng = storedLng;
+        } else {
+            alert('Please enable location access or enter manual address');
+            return;
+        }
+    } else {
+        // Manual address - call backend geocode API
+        const address = document.getElementById('manualAddress').value;
+        if (!address) {
+            alert('Please enter an address');
+            return;
+        }
+        try {
+            const geoResponse = await fetch(`/api/geocode?address=${encodeURIComponent(address)}`);
+            const geoData = await geoResponse.json();
+            if (geoData.status === 'success') {
+                lat = geoData.data.lat;
+                lng = geoData.data.lng;
+            } else {
+                alert('Could not geocode address: ' + geoData.message);
+                return;
+            }
+        } catch (geoError) {
+            alert('Error geocoding address: ' + geoError.message);
+            return;
+        }
+    }
+    
+    // Show loading
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('results').innerHTML = '';
+    
+    try {
+        const response = await fetch(`/api/search?medicine=${encodeURIComponent(medicineName)}&lat=${lat}&lng=${lng}&distance=${searchRadius}`);
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            displayResults(data.data.results);
+            updateMapWithResults(data.data.results, lat, lng);
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (error) {
+        console.error('Search error:', error);
+        document.getElementById('results').innerHTML = `
+            <div class="col-12 text-center text-danger py-4">
+                <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
+                <p>Error searching for medicines: ${error.message}</p>
+            </div>
+        `;
+    } finally {
+        document.getElementById('loading').style.display = 'none';
+    }
+});
+
+function displayResults(results) {
+    const resultsContainer = document.getElementById('results');
+    const resultsCount = document.getElementById('resultsCount');
+    
+    resultsCount.textContent = `${results.length} results`;
+    
+    if (results.length === 0) {
+        resultsContainer.innerHTML = `
+            <div class="col-12 text-center text-muted py-4">
+                <i class="fas fa-search fa-2x mb-3"></i>
+                <p>No medicines found matching your search criteria</p>
+                <p class="small">Try broadening your search or check spelling</p>
+            </div>
+        `;
+        return;
+    }
+    
+    resultsContainer.innerHTML = results.map(result => `
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h6 class="card-title text-primary">${result.medicine.name}</h6>
+                    ${result.medicine.generic_name ? `<p class="small text-muted">${result.medicine.generic_name}</p>` : ''}
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-${result.availability.stock > 0 ? 'success' : 'danger'}">
+                            ${result.availability.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                        </span>
+                        <span class="h6 text-success mb-0">₹${result.availability.price}</span>
+                    </div>
+                    
+                    <p class="card-text small mb-1">
+                        <i class="fas fa-store me-1"></i>
+                        <strong>${result.pharmacy.name}</strong>
+                    </p>
+                    
+                    <p class="card-text small text-muted mb-1">
+                        <i class="fas fa-map-marker-alt me-1"></i>
+                        ${result.pharmacy.address}
+                    </p>
+                    
+                    ${result.distance ? `
+                    <p class="card-text small text-muted mb-2">
+                        <i class="fas fa-road me-1"></i>
+                        ${result.distance} km away
+                    </p>
+                    ` : ''}
+                    
+                    ${result.availability.stock > 0 ? `
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-primary" onclick="getDirections(${result.pharmacy.latitude}, ${result.pharmacy.longitude})">
+                            <i class="fas fa-directions me-1"></i>Directions
+                        </button>
+                        <button class="btn btn-sm btn-outline-success">
+                            <i class="fas fa-phone me-1"></i>Call
+                        </button>
+                    </div>
+                    ` : ''}
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function updateMapWithResults(results, userLat, userLng) {
+    // Clear existing pharmacy markers
+    pharmacyMarkers.forEach(marker => marker.setMap(null));
+    pharmacyMarkers = [];
+    
+    // Add user marker if not already present
+    if (!userMarker && userLat && userLng) {
+        userMarker = new google.maps.Marker({
+            position: { lat: parseFloat(userLat), lng: parseFloat(userLng) },
+            map: map,
+            title: 'Your Location',
+            icon: {
+                url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+            }
+        });
+    }
+    
+    // Add pharmacy markers
+    results.forEach(result => {
+        if (result.pharmacy.latitude && result.pharmacy.longitude) {
+            const marker = new google.maps.Marker({
+                position: { 
+                    lat: result.pharmacy.latitude, 
+                    lng: result.pharmacy.longitude 
+                },
+                map: map,
+                title: result.pharmacy.name,
+                icon: {
+                    url: result.availability.stock > 0 ? 
+                         'http://maps.google.com/mapfiles/ms/icons/green-dot.png' :
+                         'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
+                }
+            });
+            
+            // Add info window
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div style="max-width: 200px;">
+                        <h6>${result.pharmacy.name}</h6>
+                        <p>${result.medicine.name}: ₹${result.availability.price}</p>
+                        <p>Stock: ${result.availability.stock}</p>
+                        <button onclick="getDirections(${result.pharmacy.latitude}, ${result.pharmacy.longitude})">
+                            Get Directions
+                        </button>
+                    </div>
+                `
+            });
+            
+            marker.addListener('click', () => {
+                infoWindow.open(map, marker);
+            });
+            
+            pharmacyMarkers.push(marker);
+        }
+    });
+    
+    // Adjust map bounds to show all markers
+    if (pharmacyMarkers.length > 0) {
+        const bounds = new google.maps.LatLngBounds();
+        pharmacyMarkers.forEach(marker => bounds.extend(marker.getPosition()));
+        if (userMarker) bounds.extend(userMarker.getPosition());
+        map.fitBounds(bounds);
+    }
+}
+
+function getDirections(pharmacyLat, pharmacyLng) {
+    if (userMarker) {
+        const userPos = userMarker.getPosition();
+        const url = `https://www.google.com/maps/dir/${userPos.lat()},${userPos.lng()}/${pharmacyLat},${pharmacyLng}`;
+        window.open(url, '_blank');
+    } else {
+        alert('Please enable location access for directions');
+    }
+}
+
+// Initialize map if Google Maps is already loaded
+if (typeof google !== 'undefined') {
+    initMap();
+}
+</script>
+{% endblock %}
