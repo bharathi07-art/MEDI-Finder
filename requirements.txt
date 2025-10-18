@@ -1,0 +1,28 @@
+Flask==2.3.3
+Flask-SQLAlchemy==3.0.5
+Flask-Login==0.6.2
+Werkzeug==2.3.7
+python-dotenv==1.0.0
+geopy==2.3.0
+requests==2.31.0
+pytest==7.4.3
+pytest-flask==1.2.0
+selenium==4.15.2
+webdriver-manager==4.0.1
+coverage==7.3.2
+flask_cors
+torch
+nltk
+geocoder
+numpy==1.26.4
+pandas
+langdetect==1.0.9
+
+# OCR and Image Processing Dependencies
+Pillow>=10.1.0
+pytesseract==0.3.10
+opencv-python-headless==4.8.1.78
+pdf2image==1.17.0
+# Note: popplerqt5-QT5 removed - not available in PyPI
+# Install poppler-utils system package instead: apt-get install poppler-utils (Ubuntu/Debian)
+# or download from: https://poppler.freedesktop.org/
